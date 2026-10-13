@@ -25,11 +25,11 @@ main {
 
 body {
 	margin: 0;
-	--color-text: #05cf82;
-    --color-bg: #047024;
+	--color-text: #ffdd00;
+    --color-bg: #666666;
     --color-link: #0aecce;
 	--color-link-hover: #fff;
-	--color-content-title-sub: #a1f057;
+	--color-content-title-sub: #02c8ff;
     color: var(--color-text);
     background-color: var(--color-bg);
     --cursor-stroke: #6b5537;
@@ -187,7 +187,7 @@ a:focus {
 
 .grid__item {
 	position: relative;
-	opacity: 0.4,
+	opacity: 0.4;
 }
 
 .grid--img .grid__item {
@@ -351,4 +351,159 @@ a:focus {
 		stroke: var(--cursor-stroke);
 		stroke-width: var(--cursor-stroke-width);
 	}
+}
+/* ===== Mobile / màn hình hẹp (< 53em) ===== */
+@media screen and (max-width: 52.99em) {
+
+	/* Ẩn banner cảnh báo desktop (nếu còn tồn tại) */
+	.message {
+		display: none;
+	}
+
+	.frame {
+		padding: 1.5rem 1rem;
+	}
+
+	/* Bỏ giới hạn chiều cao (bản gốc khoá max-height: 300px) để lưới ảnh
+	   phủ trọn màn hình dọc, tránh lộ nền phía dưới.
+	   100dvh tính đúng cả khi thanh địa chỉ trình duyệt mobile ẩn/hiện. */
+	.content {
+		height: 100vh;
+		height: 100dvh;
+		max-height: none;
+		justify-content: center;
+	}
+
+	/* Chữ to hơn, dễ đọc trên màn hình hẹp */
+	.content__title {
+		font-size: 2.4rem;
+		margin: 0.4rem 0;
+		text-align: center;
+		padding: 0 0.5rem;
+		z-index: 200;
+	}
+
+	.content__title-sub {
+		font-size: 1.1rem;
+		margin-left: 0;
+		line-height: 1.4;
+		text-align: center;
+	}
+
+	/* Ảnh mờ nhẹ để chữ nổi rõ phía trên */
+	.grid__item-img {
+		opacity: 0.55;
+	}
+
+	/* Lưới gốc tràn ra ngoài viền 5% mỗi phía (top/left -5%, kích thước 110%)
+	   để ảnh có chỗ dịch theo chuột. Trên mobile ảnh đứng yên nên phần tràn
+	   chỉ làm mất ảnh ở mép -> đưa lưới về đúng khung màn hình.
+	   Đồng thời đổi repeat(50, 2%) sang repeat(50, 1fr): giá trị % phụ thuộc
+	   kích thước container nên dễ dồn lệch, còn fr luôn chia đều tuyệt đối. */
+	.grid {
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		grid-template-columns: repeat(50, 1fr);
+		grid-template-rows: repeat(50, 1fr);
+	}
+
+	/* Khung ảnh không phóng to thêm 100px như bản desktop,
+	   nhờ vậy ảnh hiện trọn trong ô thay vì bị cắt mép */
+	.grid--img .grid__item-img,
+	.grid__item-img {
+		width: 100%;
+		height: 100%;
+	}
+
+	/* Bố cục 3 cột cho màn hình dọc, khung nhỏ lại và chừa lề an toàn:
+	   cột 3-16 / 19-32 / 35-48, không chạm mép trái phải.
+	   Hàng 24-30 để trống dành cho chữ ở giữa. */
+	.pos-1  { grid-area: 3 / 3 / 12 / 16; }
+	.pos-2  { grid-area: 3 / 19 / 12 / 32; }
+	.pos-3  { grid-area: 3 / 35 / 12 / 48; }
+	.pos-4  { grid-area: 13 / 3 / 23 / 16; }
+	.pos-5  { grid-area: 13 / 19 / 23 / 32; }
+	.pos-6  { grid-area: 13 / 35 / 23 / 48; }
+	.pos-7  { grid-area: 31 / 3 / 41 / 16; }
+	.pos-8  { grid-area: 31 / 19 / 41 / 32; }
+	.pos-9  { grid-area: 31 / 35 / 41 / 48; }
+	.pos-10 { grid-area: 42 / 19 / 49 / 32; }
+
+	/* GSAP ghi transform inline lên .grid__item theo toạ độ chuột. Trên cảm ứng
+	   toạ độ luôn là 0 nên mọi khung bị kéo lệch cùng một hướng -> dồn về phải.
+	   Khoá lại bằng !important (CSS thắng inline style). */
+	.grid__item,
+	.grid--img .grid__item {
+		transform: none !important;
+		opacity: 1 !important;
+	}
+
+	/* Chuyển động tự động nhẹ thay cho hiệu ứng theo chuột.
+	   !important vì GSAP cũng ghi transform inline lên phần tử ảnh bên trong. */
+	.grid--img .grid__item-img,
+	.grid__item-img {
+		animation: floatA 7s ease-in-out infinite alternate !important;
+	}
+
+	/* Mỗi ảnh một hướng + nhịp riêng để cả lưới trông tự nhiên,
+	   không bị đồng loạt nhấp nhô cùng lúc */
+	.pos-2 .grid__item-img  { animation-name: floatB; animation-duration: 9s;  animation-delay: -1.5s; }
+	.pos-3 .grid__item-img  { animation-name: floatC; animation-duration: 8s;  animation-delay: -3s;   }
+	.pos-4 .grid__item-img  { animation-name: floatC; animation-duration: 10s; animation-delay: -4.5s; }
+	.pos-5 .grid__item-img  { animation-name: floatA; animation-duration: 11s; animation-delay: -2s;   }
+	.pos-6 .grid__item-img  { animation-name: floatB; animation-duration: 8.5s;animation-delay: -5s;   }
+	.pos-7 .grid__item-img  { animation-name: floatC; animation-duration: 11s; animation-delay: -2s;   }
+	.pos-8 .grid__item-img  { animation-name: floatA; animation-duration: 9.5s;animation-delay: -6s;   }
+	.pos-9 .grid__item-img  { animation-name: floatB; animation-duration: 10s; animation-delay: -3.5s; }
+	.pos-10 .grid__item-img { animation-name: floatC; animation-duration: 12s; animation-delay: -1s;   }
+}
+
+/* Ba biến thể trôi nhẹ theo các hướng khác nhau.
+   Biên độ nhỏ (6-9px) và không dùng scale > 1 để ảnh không bị cắt mép. */
+@keyframes floatA {
+	from { transform: translate3d(0, -7px, 0); }
+	to   { transform: translate3d(0, 7px, 0); }
+}
+
+@keyframes floatB {
+	from { transform: translate3d(-7px, 4px, 0); }
+	to   { transform: translate3d(7px, -4px, 0); }
+}
+
+@keyframes floatC {
+	from { transform: translate3d(5px, 6px, 0) rotate(-0.6deg); }
+	to   { transform: translate3d(-5px, -6px, 0) rotate(0.6deg); }
+}
+
+/* Tôn trọng người dùng tắt hiệu ứng chuyển động trong cài đặt hệ thống */
+@media (prefers-reduced-motion: reduce) {
+	.grid__item-img {
+		animation: none !important;
+	}
+}
+
+/* Nút mời chạm để bật hiệu ứng nghiêng (chỉ xuất hiện trên iOS 13+,
+   nơi Safari bắt buộc xin quyền cảm biến từ thao tác chạm thật) */
+.tilt-enable {
+	position: fixed;
+	left: 50%;
+	bottom: 1.5rem;
+	transform: translateX(-50%);
+	z-index: 500;
+	padding: 0.7rem 1.2rem;
+	border: 1px solid currentColor;
+	border-radius: 2rem;
+	background: rgba(0, 0, 0, 0.45);
+	color: var(--color-content-title-sub);
+	font-family: inherit;
+	font-size: 0.8rem;
+	cursor: pointer;
+	-webkit-backdrop-filter: blur(4px);
+	backdrop-filter: blur(4px);
+}
+
+.tilt-enable:active {
+	opacity: 0.6;
 }
